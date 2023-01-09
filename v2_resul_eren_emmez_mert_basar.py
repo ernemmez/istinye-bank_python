@@ -43,29 +43,34 @@ def Logging(_activicion):
     # and if you want write some io library code
 
 
-# def GetLogs(actKind, actList, user, passW):
-#     for act in list(actList):
-#         if act.kind == actKind and act.userN == user and act.passW == passW:
-#             print(f'Your Transfers:\n   Time Person Amount:\n   {GetTime()} Transferred to {act.Info.values()[2]} {act.Info.values()[1]} TL')
-#         elif act.kind == actKind and act.Info.values()[2] == user and act.passW == passW:
-#             print(f'Your Transfers:\n   Time Person Amount:\n   {GetTime()} Transferred to me from {act.userN} {act.Info.values()[1]} TL')
-
-
-def GetLogs(actList, user, passW):
+def GetLogs(actKind, actList, user, passW):
     for act in list(actList):
-        if act.userN == user and act.passW == passW:
-            print('User Activities Report:\n')
-            if act.kind.name == activicionKind.withdrawals.name or act.kind.name == activicionKind.deposite:
-                if act.kind.name == activicionKind.withdrawals.name:
+        if act.kind == actKind and act.userN == user and act.passW == passW:
+            match act.kind.name:
+                case activicionKind.transfersEtc.name:
+                    print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to {list(act.Info.values())[2]} {list(act.Info.values())[1]} TL')
+                case activicionKind.withdrawals.name:
                     print(f'Your Withdrawals:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
-                else:
+                case activicionKind.deposite.name:
                     print(f'Your Deposits:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
-            elif act.kind.name == activicionKind.transfersEtc.name:
-                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to {list(act.Info.values())[2]} {list(act.Info.values())[1]} TL')
-        elif list(act.Info.values())[2] == user and act.passW == passW:
-            print('User Activities Report:\n')
-            if act.kind.name == activicionKind.transfersEtc.name:
-                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to me from {list(act.userN)} {list(act.Info.values())[1]} TL')
+        elif act.kind == actKind and act.Info.values()[2] == user and act.passW == passW:
+            print(f'Your Transfers:\n   Time Person Amount:\n   {GetTime()} Transferred to me from {act.userN} {act.Info.values()[1]} TL')
+
+#def GetLogs(actList, user, passW):
+#    for act in list(actList):
+#        if act.userN == user and act.passW == passW:
+#            print('User Activities Report:\n')
+#            if act.kind.name == activicionKind.withdrawals.name or act.kind.name == activicionKind.deposite:
+#                if act.kind.name == activicionKind.withdrawals.name:
+#                    print(f'Your Withdrawals:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
+#                else:
+#                    print(f'Your Deposits:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
+#            elif act.kind.name == activicionKind.transfersEtc.name:
+#                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to {list(act.Info.values())[2]} {list(act.Info.values())[1]} TL')
+#        elif list(act.Info.values())[2] == user and act.passW == passW:
+#            print('User Activities Report:\n')
+#            if act.kind.name == activicionKind.transfersEtc.name:
+#                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to me from {list(act.userN)} {list(act.Info.values())[1]} TL')
 
 
 
