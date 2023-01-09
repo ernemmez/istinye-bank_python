@@ -1,10 +1,6 @@
 import time
 import enum
 
-
-
-# Merhaba ben mert
-
 class activicionKind(enum.Enum):
     deposite = 2
     withdrawals = 3
