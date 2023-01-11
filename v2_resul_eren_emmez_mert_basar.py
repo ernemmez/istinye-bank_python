@@ -1,6 +1,7 @@
 import time
 import enum
 
+
 class activicionKind(enum.Enum):
     deposite = 2
     withdrawals = 3
@@ -35,8 +36,10 @@ activicionList = []
 userName = ''
 password = 0
 
+
 def GetTime():
     return f'{time.localtime().tm_year}-{time.localtime().tm_mon}-{time.localtime().tm_mday}  {time.localtime().tm_hour}:{time.localtime().tm_min}:{time.localtime().tm_sec}'
+
 
 def Logging(_activicion):
     activicionList.append(_activicion)
@@ -56,7 +59,7 @@ def GetLogs(actKind, actList, user, passW):
         elif act.kind == actKind and act.Info.values()[2] == user and act.passW == passW:
             print(f'Your Transfers:\n   Time Person Amount:\n   {GetTime()} Transferred to me from {act.userN} {act.Info.values()[1]} TL')
 
-#def GetLogs(actList, user, passW):
+# def GetLogs(actList, user, passW):
 #    for act in list(actList):
 #        if act.userN == user and act.passW == passW:
 #            print('User Activities Report:\n')
@@ -73,15 +76,12 @@ def GetLogs(actKind, actList, user, passW):
 #                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to me from {list(act.userN)} {list(act.Info.values())[1]} TL')
 
 
-
-
 def Process(_activicion):
-
     Logging(_activicion)
     sender = getOnlineCustomer(_activicion.userN)
-    receiver = getOnlineCustomer(list(_activicion.Info.values())[2]) if len(list(_activicion.Info.values())) == 3 else print('')
+    if len(list(_activicion.Info.values())) == 3:
+        receiver = getOnlineCustomer(list(_activicion.Info.values())[2])
     amount = list(_activicion.Info.values())[1]
-
 
     if _activicion.kind.name == activicionKind.withdrawals.name:
         sender[2] -= amount
@@ -94,15 +94,12 @@ def Process(_activicion):
         print('An error occurred while logging')
 
 
-
-
-
 def getOnlineCustomer(cus):
     if musteriBir[0] == cus:
         return musteriBir
     elif musteriIki[0] == cus:
         return musteriIki
-    elif  musteriUc[0] == cus:
+    elif musteriUc[0] == cus:
         return musteriUc
 
 
@@ -115,16 +112,22 @@ def getOnlineCustomerMoney(cus):
         return int(musteriUc[2])
 
 
+def Draw(cus):
+    drawMoney = int(input('Please enter the amount you want to withdraw:'))
+    if drawMoney <= getOnlineCustomerMoney(userName):
+        activicionDraw = activicion(cus, getOnlineCustomer(cus)[1], activicionKind.withdrawals, {processMember.time: GetTime(), processMember.total: drawMoney})
+        Process(activicionDraw)
+        setMoney = 0
+        print(f'{drawMoney} TL withdrawn from your account\nGoing back to main menu...')
+        return True
+    else:
+        print(f'You don’t have {drawMoney} TL in your account\nGoing back to main menu...')
+        return False
 
 
-def Draw(drawMoney,cus):
-    activicionDraw = activicion(cus, getOnlineCustomer(cus)[1], activicionKind.withdrawals, {processMember.time : GetTime(), processMember.total : drawMoney})
-    Process(activicionDraw)
-    setMoney = 0
-    print(f'{drawMoney} TL withdrawn from your account\nGoing back to main menu...')
+def DepositeMoney(cus):
+    amountMoney = int(input('Please enter the amount you want to drop:'))
 
-
-def DepositeMoney(amountMoney, cus):
     activicionAmount = activicion(cus, getOnlineCustomer(cus)[1], activicionKind.deposite, {processMember.time: GetTime(), processMember.total: amountMoney})
     Process(activicionAmount)
     setMoney = 0
@@ -139,15 +142,19 @@ def TransferEtc(cus):
         if FromCus != ToCus and (ToCus == musteriBir[0] or ToCus == musteriIki[0] or ToCus == musteriUc[0]):
             transferMoney = int(input('Please enter the amount you want to transfer:'))
             if transferMoney < getOnlineCustomerMoney(FromCus):
-                activicionTranferEtc = activicion(FromCus, getOnlineCustomer(FromCus)[1], activicionKind.transfersEtc, {processMember.time : GetTime(), processMember.total : transferMoney, processMember.to : ToCus})
+                activicionTranferEtc = activicion(FromCus, getOnlineCustomer(FromCus)[1], activicionKind.transfersEtc, {processMember.time: GetTime(), processMember.total: transferMoney, processMember.to: ToCus})
                 Process(activicionTranferEtc)
                 print('Money transferred successfully\nGoing back to main menu')
                 return True
             else:
+                print('Sorry! You don’t have enough money to complete this transaction. \n \n \n \n 1. Go back to main menu \n 2. Transfer again')
                 return False
         else:
             print('User does not exist!')
-            TransferEtc(cus)
+            if TransferEtc(cus):
+                return True
+            else:
+                return False
     else:
         print('Going back to main menu...')
         return True
@@ -155,8 +162,6 @@ def TransferEtc(cus):
 
 def GetLocalTimeAndBankName():
     return print(f'   ----WELKOME TO ISTINYE BANK----\n        ------------------\n      /      ISTANBUL      \ \n     |  {GetTime()}  | \n      \                    /\n        ------------------')
-
-
 
 
 def main():
@@ -183,46 +188,40 @@ def main():
                                 while dongu > 3:
                                     print(f'\nWelcome {userName}!\nPlease enter the number of the service:\n1.Withdraw Money\n2.Deposit Money\n3.Transfer Money\n4.My Account Information\n5.Logout')
                                     select = int(input())
-                                    if select == 1:
-                                        dongu += 1
-                                        while dongu > 4:
-                                            setMoney = int(input('Please enter the amount you want to withdraw:'))
-                                            if setMoney <= getOnlineCustomerMoney(userName):
-                                                Draw(setMoney, userName)
+                                    match select:
+                                        case 1:
+                                            dongu += 1
+                                            while dongu > 4:
+                                                Draw(userName)
                                                 dongu -= 1
-                                            else:
-                                                print(f'You don’t have {setMoney} TL in your account\nGoing back to main menu...')
+                                        case 2:
+                                            dongu += 1
+                                            while dongu > 4:
+                                                DepositeMoney(userName)
                                                 dongu -= 1
-                                    elif select == 2:
-                                        dongu += 1
-                                        while dongu > 4:
-                                            setMoney = int(input('Please enter the amount you want to drop:'))
-                                            DepositeMoney(setMoney, userName)
-                                            dongu -= 1
-                                    elif select == 3:
-                                        dongu += 1
-                                        while dongu > 4:
-                                            if TransferEtc(userName):
-                                                dongu -= 1
-                                            else:
-                                                print('Sorry! You don’t have enough money to complete this transaction. \n \n \n \n 1. Go back to main menu \n 2. Transfer again')
-                                                select = int(input())
-                                                if select == 1:
-                                                    print('Going back to main menu...')
+                                        case 3:
+                                            dongu += 1
+                                            while dongu > 4:
+                                                transferResult = TransferEtc(userName)
+                                                if transferResult:
                                                     dongu -= 1
-                                                elif select == 2:
-                                                    pass
                                                 else:
-                                                    print('please choose one of the options')
-                                    elif select == 4:
-                                        GetLocalTimeAndBankName()
-                                        print(f'Your Name: {userName}\nYour Password: {password}\nYour Amount(TL): {getOnlineCustomerMoney(userName)}')
-                                        GetLogs(activicionList, userName, password) if len(activicionList) != 0 else print('Anything exists')
-
-                                    elif select == 5:
-                                        dongu -= 2
-                                    else:
-                                        print('please choose one of the options')
+                                                    select = int(input())
+                                                    if select == 1:
+                                                        print('Going back to main menu...')
+                                                        dongu -= 1
+                                                    elif select == 2:
+                                                        pass
+                                                    else:
+                                                        print('please choose one of the options')
+                                        case 4:
+                                            GetLocalTimeAndBankName()
+                                            print(f'Your Name: {userName}\nYour Password: {password}\nYour Amount(TL): {getOnlineCustomerMoney(userName)}')
+                                            GetLogs(activicionList, userName, password) if len(activicionList) != 0 else print('Anything exists')
+                                        case 5:
+                                            dongu -= 2
+                                        case _:
+                                            print('please choose one of the options')
                                 else:
                                     print('please choose one of the options')
                             else:
@@ -240,5 +239,6 @@ def main():
     except:
         print('Something went wrong, please try again')
         main()
+
 
 main()
