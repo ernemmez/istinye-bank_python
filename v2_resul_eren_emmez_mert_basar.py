@@ -161,7 +161,7 @@ def getOnlineCustomerMoney(cus):
 
 def Draw(cus):
     drawMoney = int(input('Please enter the amount you want to withdraw:'))
-    if drawMoney <= getOnlineCustomerMoney(userName):
+    if drawMoney <= getOnlineCustomerMoney(cus):
         activicionDraw = activicion(cus, getOnlineCustomer(cus)[1], activicionKind.withdrawals, {processMember.time: GetTime(), processMember.total: drawMoney})
         Process(activicionDraw)
         setMoney = 0
