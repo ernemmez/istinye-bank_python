@@ -46,20 +46,60 @@ def Logging(_activicion):
     # and if you want write some io library code
 
 
-def GetLogs(actKind, actList, user, passW):
-    for act in list(actList):
-        if act.kind == actKind and act.userN == user and act.passW == passW:
-            match act.kind.name:
-                case activicionKind.transfersEtc.name:
-                    print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to {list(act.Info.values())[2]} {list(act.Info.values())[1]} TL')
-                case activicionKind.withdrawals.name:
-                    print(f'Your Withdrawals:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
-                case activicionKind.deposite.name:
-                    print(f'Your Deposits:\n{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
-        elif act.kind == actKind and act.Info.values()[2] == user and act.passW == passW:
-            print(f'Your Transfers:\n   Time Person Amount:\n   {GetTime()} Transferred to me from {act.userN} {act.Info.values()[1]} TL')
+# def GetLogsTwo(actKind, actList, user, passW):
+#     for act in list(actList):
+#         if act.kind == actKind and act.userN == user and act.passW == passW:
+#             match act.kind.name:
+#                 case activicionKind.transfersEtc.name:
+#                     print(f'Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to {list(act.Info.values())[2]} {list(act.Info.values())[1]} TL')
+#                     break
+#                 case activicionKind.withdrawals.name:
+#                     print(f'{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
+#                     break
+#                 case activicionKind.deposite.name:
+#                     print(f'{list(act.Info.values())[0]} {list(act.Info.values())[1]} TL')
+#                     break
+#     for act in list(actList):
+#         if act.kind == actKind and list(act.Info.values())[2] == user and act.passW == passW:
+#             print(f'Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to from me {act.userN} {list(act.Info.values())[1]} TL')
 
-# def GetLogs(actList, user, passW):
+def GetTransferLogs(eachLog, toWho):
+    if toWho == 'sender':
+        print(f'{list(eachLog.Info.values())[0]} transferred to {list(eachLog.Info.values())[2]} {list(eachLog.Info.values())[1]}')
+    elif toWho == 'receiver':
+        print(f'{list(eachLog.Info.values())[0]} transferred to me from {eachLog.userN} {list(eachLog.Info.values())[1]}')
+    else:
+        print('Log source is exists')
+
+def GetWithdrawalOrDepositeLogs(eachLog):
+    print(f'{list(eachLog.Info.values())[0]}  {list(eachLog.Info.values())[1]}')
+
+
+#
+def GetLogs(actKind, actList, user, passW):
+
+    if actKind == activicionKind.transfersEtc.name:
+        for act in list(actList):
+            if act.kind.name == activicionKind.transfersEtc.name and act.userN == user and act.passW == passW:
+                GetTransferLogs(act, 'sender')
+        for act in list(actList):
+            if act.kind.name == activicionKind.transfersEtc.name and list(act.Info.values())[2] == user:
+                GetTransferLogs(act, 'receiver')
+
+    elif actKind == activicionKind.withdrawals.name:
+        for act in list(actList):
+            if act.kind.name == activicionKind.withdrawals.name and act.userN == user and act.passW == passW:
+                GetWithdrawalOrDepositeLogs(act)
+
+    elif actKind == activicionKind.deposite.name:
+        for act in list(actList):
+            if act.kind.name == activicionKind.deposite.name and act.userN == user and act.passW == passW:
+                GetWithdrawalOrDepositeLogs(act)
+    else:
+        print('Log source is exists')
+
+
+#def GetLogs(actList, user, passW):
 #    for act in list(actList):
 #        if act.userN == user and act.passW == passW:
 #            print('User Activities Report:\n')
@@ -76,12 +116,16 @@ def GetLogs(actKind, actList, user, passW):
 #                print(f'Your Transfers:\n   Time Person Amount:\n   {list(act.Info.values())[0]} Transferred to me from {list(act.userN)} {list(act.Info.values())[1]} TL')
 
 
+
+
 def Process(_activicion):
+
     Logging(_activicion)
     sender = getOnlineCustomer(_activicion.userN)
     if len(list(_activicion.Info.values())) == 3:
         receiver = getOnlineCustomer(list(_activicion.Info.values())[2])
     amount = list(_activicion.Info.values())[1]
+
 
     if _activicion.kind.name == activicionKind.withdrawals.name:
         sender[2] -= amount
@@ -92,6 +136,9 @@ def Process(_activicion):
         receiver[2] += amount
     else:
         print('An error occurred while logging')
+
+
+
 
 
 def getOnlineCustomer(cus):
@@ -164,6 +211,8 @@ def GetLocalTimeAndBankName():
     return print(f'   ----WELKOME TO ISTINYE BANK----\n        ------------------\n      /      ISTANBUL      \ \n     |  {GetTime()}  | \n      \                    /\n        ------------------')
 
 
+
+
 def main():
     try:
         dongu = 1
@@ -216,8 +265,14 @@ def main():
                                                         print('please choose one of the options')
                                         case 4:
                                             GetLocalTimeAndBankName()
-                                            print(f'Your Name: {userName}\nYour Password: {password}\nYour Amount(TL): {getOnlineCustomerMoney(userName)}')
-                                            GetLogs(activicionList, userName, password) if len(activicionList) != 0 else print('Anything exists')
+                                            print(
+                                                f'Your Name: {userName}\nYour Password: {password}\nYour Amount(TL): {getOnlineCustomerMoney(userName)}')
+                                            print('User Activities Report:\nYour Withdrawals:\n')
+                                            GetLogs(activicionKind.withdrawals.name, activicionList, userName, password)
+                                            print('Your Deposites:\n')
+                                            GetLogs(activicionKind.deposite.name, activicionList, userName, password)
+                                            print('Your TransferEtc:\nTime Person Amount\n')
+                                            GetLogs(activicionKind.transfersEtc.name, activicionList, userName, password)
                                         case 5:
                                             dongu -= 2
                                         case _:
